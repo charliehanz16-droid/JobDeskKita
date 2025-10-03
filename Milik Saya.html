@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Pisahkan Data Tiket</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #121212 url('https://media.linklist.bio/backgrounds/Zq7Qb762Xj6KaUWUSEPXCDpmKLCATryoNbbjK7Er.webp') no-repeat center center fixed;
+      background-size: cover;
+      color: #ffffff;
+      padding: 15px;
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+    }
+
+    /* Overlay untuk meningkatkan keterbacaan teks */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(18, 18, 18, 0.85);
+      z-index: -1;
+    }
+
+    /* KOTAK MARGIN AREA HANYA DI TENGAH - SEKITAR KONTEN DENGAN GARIS BIRU */
+    .main-container::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: calc(100% + 60px);
+      height: calc(100% + 60px);
+      background: rgba(0, 0, 0, 0.7);
+      border-radius: 12px;
+      z-index: -1;
+      box-shadow: 
+        0 0 30px rgba(0, 0, 0, 0.8),
+        inset 0 0 15px rgba(0, 180, 216, 0.1);
+      border: 2px solid #00b4d8;
+      box-shadow: 
+        0 0 20px rgba(0, 180, 216, 0.3),
+        0 0 30px rgba(0, 0, 0, 0.8),
+        inset 0 0 15px rgba(0, 180, 216, 0.1);
+    }
+
+    .main-container {
+      display: flex;
+      gap: 20px;
+      max-width: 900px;
+      width: 100%;
+      justify-content: center;
+      align-items: flex-start;
+      position: relative;
+      z-index: 1;
+    }
+
+    .center-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 420px;
+    }
+
+    .preview-section {
+      width: 320px;
+    }
+
+    .input-container {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* JUDUL UTAMA DI TENGAH */
+    .title-container {
+      text-align: center;
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    .main-title {
+      color: #00b4d8;
+      font-size: 22px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .sub-title {
+      color: #00b4d8;
+      font-size: 16px;
+      text-align: center;
+      margin-bottom: 10px;
+      font-weight: normal;
+      position: relative;
+      padding-bottom: 12px;
+    }
+
+    /* GARIS DI BAWAH SUBTITLE */
+    .sub-title::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 220px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #00b4d8, #00b4d8, transparent);
+      border-radius: 2px;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      width: 100%;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      color: #00b4d8;
+      font-size: 14px;
+      font-weight: bold;
+      text-align: left;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 8px;
+      background: rgba(30, 30, 30, 0.9);
+      color: #ffffff;
+      border: 1px solid #2e2e2e;
+      padding: 8px;
+      border-radius: 4px;
+      box-sizing: border-box;
+      backdrop-filter: blur(5px);
+      font-size: 13px;
+    }
+
+    .clear-btn {
+      background: none;
+      border: 1px solid #007b9e;
+      border-radius: 4px;
+      color: #00b4d8;
+      cursor: pointer;
+      padding: 4px 10px;
+      font-size: 12px;
+      margin-bottom: 25px; /* Ditambah jarak di sini */
+      backdrop-filter: blur(5px);
+      background: rgba(30, 30, 30, 0.8);
+      align-self: flex-start;
+    }
+
+    .clear-btn:hover {
+      background-color: #007b9e;
+      color: #ffffff;
+    }
+
+    /* Judul DATA SCATTER */
+    .data-scatter-title {
+      color: #00b4d8;
+      font-size: 16px;
+      font-weight: bold;
+      text-align: center;
+      margin-bottom: 15px;
+      width: 100%;
+    }
+
+    .data-box {
+      background: rgba(26, 26, 26, 0.9);
+      border: 2px solid #007b9e;
+      border-radius: 6px;
+      padding: 8px 10px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      backdrop-filter: blur(5px);
+      width: 100%;
+      box-sizing: border-box;
+      min-height: 40px;
+    }
+
+    .label {
+      font-weight: bold;
+      color: #00b4d8;
+      width: 80px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .value {
+      flex-grow: 1;
+      margin: 0 6px;
+      word-break: break-word;
+      color: #e0f7ff;
+      display: flex;
+      align-items: center;
+      min-height: 16px;
+      width: 220px;
+      max-width: 220px;
+      min-width: 220px;
+      font-size: 13px;
+    }
+
+    .copy-btn {
+      background: rgba(0, 180, 216, 0.2);
+      border: 1px solid #00b4d8;
+      border-radius: 4px;
+      cursor: pointer;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+      outline: none;
+      transition: all 0.3s ease;
+      min-width: 32px;
+      min-height: 32px;
+      justify-content: center;
+    }
+
+    .copy-btn:hover {
+      background: rgba(0, 180, 216, 0.4);
+      border-color: #00b4d8;
+      transform: scale(1.05);
+    }
+
+    .copy-btn:focus {
+      outline: 2px solid #00b4d8;
+      outline-offset: 2px;
+      background: rgba(0, 180, 216, 0.3);
+    }
+
+    .copy-btn:active {
+      transform: scale(0.95);
+      background: rgba(0, 180, 216, 0.5);
+    }
+
+    .copy-btn svg {
+      fill: #00b4d8;
+      transition: fill 0.2s ease;
+      width: 16px;
+      height: 16px;
+    }
+
+    .copy-btn:hover svg {
+      fill: #ffffff;
+    }
+
+    /* Styling untuk preview gambar */
+    .preview-section {
+      background: rgba(26, 26, 26, 0.9);
+      border: 2px solid #007b9e;
+      border-radius: 6px;
+      padding: 12px;
+      backdrop-filter: blur(5px);
+      height: fit-content;
+    }
+
+    .images-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
+    .image-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      background: rgba(30, 30, 30, 0.9);
+      padding: 10px;
+      border-radius: 6px;
+      border: 1px solid #2e2e2e;
+      backdrop-filter: blur(5px);
+    }
+
+    .image-title {
+      color: #00b4d8;
+      font-weight: bold;
+      margin-bottom: 6px;
+      font-size: 12px;
+    }
+
+    .image-preview {
+      max-width: 100%;
+      max-height: 150px;
+      border-radius: 4px;
+      border: 2px solid #007b9e;
+      display: none;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .image-preview:hover {
+      transform: scale(1.02);
+      border-color: #00b4d8;
+    }
+
+    .image-placeholder {
+      width: 160px;
+      height: 120px;
+      background: rgba(26, 26, 26, 0.9);
+      border: 2px dashed #007b9e;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #00b4d8;
+      font-size: 10px;
+      text-align: center;
+      cursor: default;
+    }
+
+    .image-error {
+      color: #ff6b6b;
+      font-size: 9px;
+      margin-top: 3px;
+      display: none;
+    }
+
+    .image-loading {
+      display: none;
+      color: #00b4d8;
+      font-size: 9px;
+      margin-top: 3px;
+    }
+
+    .no-preview {
+      text-align: center;
+      color: #666;
+      font-style: italic;
+      padding: 25px 12px;
+      font-size: 13px;
+    }
+
+    /* Style untuk nilai kosong */
+    .empty-value {
+      color: #666;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Style untuk nilai dengan data */
+    .value-content {
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    /* Link container untuk multiple links */
+    .links-container {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      width: 100%;
+    }
+
+    .link-item {
+      display: flex;
+      align-items: center;
+      min-height: 16px;
+    }
+
+    .value a {
+      color: #00b4d8;
+      text-decoration: none;
+      word-break: break-all;
+      outline: none;
+      font-size: 12px;
+    }
+
+    .value a:focus {
+      outline: 2px solid #00b4d8;
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+
+    .value a:hover {
+      color: #ffffff;
+      text-decoration: underline;
+    }
+
+    /* Feedback untuk copy berhasil */
+    .copy-success {
+      color: #00ff88 !important;
+    }
+
+    /* Style untuk toggle switch TS */
+    .ts-toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ts-toggle-label {
+      color: #00b4d8;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    /* Toggle Switch */
+    .ts-toggle {
+      position: relative;
+      display: inline-block;
+      width: 45px;
+      height: 22px;
+    }
+
+    .ts-toggle input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .ts-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #007b9e;
+      transition: .4s;
+      border-radius: 22px;
+    }
+
+    .ts-slider:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    input:checked + .ts-slider {
+      background-color: #00b4d8;
+    }
+
+    input:checked + .ts-slider:before {
+      transform: translateX(23px);
+    }
+
+    .ts-badge {
+      color: #00ff88;
+      font-weight: bold;
+      margin-left: 3px;
+      display: none;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="main-container">
+  <div class="center-section">
+    <div class="input-container">
+      <!-- JUDUL BARU DI TENGAH -->
+      <div class="title-container">
+        <div class="main-title">Scatter Mahjong Ways</div>
+        <div class="sub-title">Event Scatter Mahjong Ways I & II</div>
+      </div>
+
+      <!-- Header dengan judul dan toggle switch TS -->
+      <div class="section-header">
+        <div class="section-title">INPUT DATA DARI DOCS SCATTER</div>
+        <div class="ts-toggle-container">
+          <span class="ts-toggle-label">TS:</span>
+          <label class="ts-toggle">
+            <input type="checkbox" id="tsToggle" onchange="toggleTS()">
+            <span class="ts-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <textarea id="inputData" placeholder="Tempel data di sini sormin jangan kau rusak..."></textarea>
+      <button class="clear-btn" onclick="resetSemua()">🗑 Hapus</button>
+
+      <!-- Judul DATA SCATTER di atas kolom data -->
+      <div class="data-scatter-title">DATA SCATTER</div>
+
+      <div id="outputContainer">
+        <div class="data-box">
+          <span class="label">User ID :</span>
+          <span class="value" id="userId">
+            <span class="value-content">
+              <span class="empty-value">-</span>
+            </span>
+            <span class="ts-badge" id="tsBadge"> TS</span>
+          </span>
+          <button class="copy-btn" onclick="copyUserId()" tabindex="1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 
+                       2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="data-box">
+          <span class="label">Kode Tiket :</span>
+          <span class="value" id="kodeTiket">
+            <span class="value-content">
+              <span class="empty-value">-</span>
+            </span>
+          </span>
+          <button class="copy-btn" onclick="copyKodeTiket()" tabindex="2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 
+                       2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="data-box">
+          <span class="label">Link Bukti :</span>
+          <div class="value" id="linkBukti">
+            <span class="value-content">
+              <span class="empty-value">-</span>
+            </span>
+          </div>
+          <button class="copy-btn" onclick="copyLinkBukti()" tabindex="3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 
+                       2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="data-box">
+          <span class="label">Bettingan :</span>
+          <span class="value" id="bettingan">
+            <span class="value-content">
+              <span class="empty-value">-</span>
+            </span>
+          </span>
+          <button class="copy-btn" onclick="copyBettingan()" tabindex="4">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24">
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 
+                       2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Preview gambar di samping kanan -->
+  <div class="preview-section">
+    <div class="section-title">PREVIEW GAMBAR BUKTI</div>
+    <div id="imagesGrid" class="images-grid">
+      <div class="no-preview">Belum ada data untuk ditampilkan</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// Variabel global untuk status TS
+let isTSActive = false;
+
+const inputField = document.getElementById("inputData");
+inputField.addEventListener("input", prosesData);
+
+// Fungsi toggle TS
+function toggleTS() {
+  const tsToggle = document.getElementById('tsToggle');
+  const tsBadge = document.getElementById('tsBadge');
+  
+  isTSActive = tsToggle.checked;
+  
+  if (isTSActive) {
+    tsBadge.style.display = 'inline';
+    // Perbarui tampilan User ID jika ada data
+    updateUserIdWithTS();
+  } else {
+    tsBadge.style.display = 'none';
+    // Kembalikan User ID ke state normal
+    updateUserIdDisplay();
+  }
+}
+
+// Fungsi untuk update User ID dengan TS
+function updateUserIdWithTS() {
+  const userIdElement = document.getElementById('userId');
+  const valueContent = userIdElement.querySelector('.value-content');
+  const emptyValue = userIdElement.querySelector('.empty-value');
+  const currentContent = valueContent.textContent || emptyValue.textContent;
+  
+  if (currentContent !== '-' && isTSActive) {
+    // Hapus "TS" jika sudah ada untuk menghindari duplikasi
+    const cleanContent = currentContent.replace(' TS', '');
+    valueContent.innerHTML = cleanContent;
+  }
+}
+
+// Fungsi untuk update tampilan User ID
+function updateUserIdDisplay() {
+  const userIdElement = document.getElementById('userId');
+  const valueContent = userIdElement.querySelector('.value-content');
+  const currentText = valueContent.textContent;
+  
+  if (currentText && currentText !== '-') {
+    // Hapus "TS" jika ada
+    const cleanText = currentText.replace(' TS', '');
+    valueContent.innerHTML = cleanText;
+  }
+}
+
+// Fungsi copy untuk masing-masing kolom
+function copyUserId() {
+  const element = document.getElementById('userId');
+  let text = '';
+  
+  const valueContent = element.querySelector('.value-content');
+  if (valueContent) {
+    text = valueContent.textContent || valueContent.innerText;
+  } else {
+    text = element.textContent || element.innerText;
+  }
+  
+  // Tambahkan "TS" jika aktif
+  if (isTSActive && text !== '-') {
+    text = text + ' TS';
+  }
+  
+  text = text.trim();
+  if (text === '-' || !text) {
+    console.log("Tidak ada data untuk disalin");
+    return;
+  }
+  
+  navigator.clipboard.writeText(text).then(() => {
+    console.log("User ID berhasil disalin:", text);
+    showCopySuccess(element);
+  }).catch(err => {
+    console.error("Gagal menyalin User ID:", err);
+    fallbackCopyTextToClipboard(text, element);
+  });
+}
+
+function copyKodeTiket() {
+  const element = document.getElementById('kodeTiket');
+  copyTextFromElement(element);
+}
+
+function copyLinkBukti() {
+  const element = document.getElementById('linkBukti');
+  copyTextFromElement(element);
+}
+
+function copyBettingan() {
+  const element = document.getElementById('bettingan');
+  copyTextFromElement(element);
+}
+
+// Fungsi utama untuk copy teks
+function copyTextFromElement(element) {
+  let text = '';
+  
+  // Cek jika element memiliki value-content
+  const valueContent = element.querySelector('.value-content');
+  if (valueContent) {
+    // Untuk link bukti yang memiliki multiple links
+    if (element.id === 'linkBukti') {
+      const links = valueContent.querySelectorAll('a');
+      if (links.length > 0) {
+        text = Array.from(links).map(link => link.textContent).join('\n');
+      } else {
+        text = valueContent.textContent || valueContent.innerText;
+      }
+    } else {
+      // Untuk kolom lainnya
+      text = valueContent.textContent || valueContent.innerText;
+    }
+  } else {
+    // Fallback jika tidak ada value-content
+    text = element.textContent || element.innerText;
+  }
+  
+  // Bersihkan teks dan cek jika kosong
+  text = text.trim();
+  if (text === '-' || !text) {
+    console.log("Tidak ada data untuk disalin");
+    return;
+  }
+  
+  // Copy ke clipboard
+  navigator.clipboard.writeText(text).then(() => {
+    console.log("Teks berhasil disalin:", text);
+    showCopySuccess(element);
+  }).catch(err => {
+    console.error("Gagal menyalin teks:", err);
+    // Fallback untuk browser yang tidak support clipboard API
+    fallbackCopyTextToClipboard(text, element);
+  });
+}
+
+// Fallback copy method
+function fallbackCopyTextToClipboard(text, element) {
+  const textArea = document.createElement("textarea");
+  textArea.value = text;
+  textArea.style.position = "fixed";
+  textArea.style.left = "-999999px";
+  textArea.style.top = "-999999px";
+  document.body.appendChild(textArea);
+  textArea.focus();
+  textArea.select();
+  
+  try {
+    const successful = document.execCommand('copy');
+    if (successful) {
+      console.log("Teks berhasil disalin (fallback):", text);
+      showCopySuccess(element);
+    } else {
+      console.error("Gagal menyalin teks (fallback)");
+    }
+  } catch (err) {
+    console.error("Gagal menyalin teks (fallback):", err);
+  }
+  
+  document.body.removeChild(textArea);
+}
+
+// Tampilkan feedback copy berhasil
+function showCopySuccess(element) {
+  const button = element.closest('.data-box').querySelector('.copy-btn');
+  if (button) {
+    const originalSvg = button.innerHTML;
+    
+    // Ganti dengan centang
+    button.innerHTML = '<span style="color: #00ff88; font-size: 14px; font-weight: bold;">✓</span>';
+    
+    // Kembalikan setelah 1.5 detik
+    setTimeout(() => {
+      button.innerHTML = originalSvg;
+    }, 1500);
+  }
+}
+
+function prosesData() {
+  const input = inputField.value.trim();
+  const parts = input.split(/\s+/);
+
+  let userId = parts[0] || "-";
+  let kodeTiket = "-";
+  let bettingan = "-";
+  let links = [];
+
+  for (let i = 1; i < parts.length; i++) {
+    const part = parts[i];
+
+    if (part.startsWith("http")) {
+      links.push(part);
+    } else if (/^\d{15,20}$/.test(part)) {
+      kodeTiket = part;
+    } else if (part.toUpperCase().includes("BET")) {
+      const next = parts[i + 1] || "";
+      bettingan = next.split("-")[0].replace(/[^\d,]/g, "") || "-";
+    }
+  }
+
+  // Update semua kolom dengan ukuran yang konsisten
+  updateValue('userId', userId);
+  updateValue('kodeTiket', kodeTiket);
+  updateValue('bettingan', bettingan);
+  
+  // Jika TS aktif, pastikan badge ditampilkan
+  if (isTSActive && userId !== '-') {
+    document.getElementById('tsBadge').style.display = 'inline';
+  }
+  
+  // Update link bukti
+  if (links.length) {
+    updateLinkBukti(links);
+    showImagePreviews(links);
+  } else {
+    updateValue('linkBukti', '-');
+    showImagePreviews([]);
+  }
+}
+
+function updateValue(elementId, value) {
+  const element = document.getElementById(elementId);
+  const valueContent = element.querySelector('.value-content');
+  
+  if (value === '-' || !value) {
+    valueContent.innerHTML = '<span class="empty-value">-</span>';
+  } else {
+    valueContent.innerHTML = value;
+  }
+}
+
+function updateLinkBukti(links) {
+  const element = document.getElementById("linkBukti");
+  const valueContent = element.querySelector('.value-content');
+  
+  valueContent.innerHTML = `
+    <div class="links-container">
+      ${links.map(link => 
+        `<div class="link-item"><a href="${link}" target="_blank" tabindex="-1">${link}</a></div>`
+      ).join('')}
+    </div>
+  `;
+}
+
+function showImagePreviews(links) {
+  const grid = document.getElementById("imagesGrid");
+  
+  if (links.length === 0) {
+    grid.innerHTML = '<div class="no-preview">Belum ada data untuk ditampilkan</div>';
+    return;
+  }
+  
+  grid.innerHTML = '';
+  
+  // Buat preview untuk setiap link
+  links.forEach((link, index) => {
+    const imageItem = document.createElement('div');
+    imageItem.className = 'image-item';
+    imageItem.id = `imageItem-${index}`;
+    
+    // Judul gambar
+    const title = document.createElement('div');
+    title.className = 'image-title';
+    title.textContent = `Gambar ${index + 1}`;
+    
+    // Container untuk preview gambar
+    const imageContainer = document.createElement('div');
+    imageContainer.className = 'image-preview-container';
+    
+    // Placeholder
+    const placeholder = document.createElement('div');
+    placeholder.className = 'image-placeholder';
+    placeholder.textContent = 'Loading...';
+    
+    // Gambar preview yang bisa diklik
+    const imagePreview = document.createElement('img');
+    imagePreview.className = 'image-preview';
+    imagePreview.id = `imagePreview-${index}`;
+    imagePreview.onclick = function() {
+      window.open(link, '_blank');
+    };
+    
+    // Loading indicator
+    const loading = document.createElement('div');
+    loading.className = 'image-loading';
+    loading.id = `imageLoading-${index}`;
+    loading.textContent = 'Memuat gambar...';
+    
+    // Error message
+    const error = document.createElement('div');
+    error.className = 'image-error';
+    error.id = `imageError-${index}`;
+    error.textContent = 'Gagal memuat gambar';
+    
+    imageContainer.appendChild(placeholder);
+    imageContainer.appendChild(imagePreview);
+    imageContainer.appendChild(loading);
+    imageContainer.appendChild(error);
+    
+    imageItem.appendChild(title);
+    imageItem.appendChild(imageContainer);
+    grid.appendChild(imageItem);
+    
+    // Muat gambar
+    loadImagePreview(link, index);
+  });
+}
+
+function loadImagePreview(url, index) {
+  const imagePreview = document.getElementById(`imagePreview-${index}`);
+  const imagePlaceholder = document.querySelector(`#imageItem-${index} .image-placeholder`);
+  const imageLoading = document.getElementById(`imageLoading-${index}`);
+  const imageError = document.getElementById(`imageError-${index}`);
+  
+  // Reset state
+  imagePreview.style.display = "none";
+  imagePlaceholder.style.display = "flex";
+  imageLoading.style.display = "none";
+  imageError.style.display = "none";
+  
+  // Coba muat gambar
+  const img = new Image();
+  img.onload = function() {
+    imagePreview.src = url;
+    imagePreview.style.display = "block";
+    imageLoading.style.display = "none";
+    imagePlaceholder.style.display = "none";
+  };
+  
+  img.onerror = function() {
+    imageLoading.style.display = "none";
+    imageError.style.display = "block";
+    imagePlaceholder.style.display = "flex";
+    imagePlaceholder.textContent = 'Gagal memuat';
+    imagePlaceholder.style.color = '#ff6b6b';
+  };
+  
+  img.src = url;
+}
+
+function resetSemua() {
+  inputField.value = "";
+  updateValue('userId', '-');
+  updateValue('kodeTiket', '-');
+  updateValue('linkBukti', '-');
+  updateValue('bettingan', '-');
+  showImagePreviews([]);
+  
+  // Reset status TS
+  const tsToggle = document.getElementById('tsToggle');
+  if (tsToggle.checked) {
+    tsToggle.checked = false;
+    toggleTS();
+  }
+}
+</script>
+
+</body>
+</html>
